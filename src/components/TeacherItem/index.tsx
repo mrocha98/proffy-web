@@ -1,36 +1,54 @@
 import React from 'react'
 
 import whatsappIcon from '../../assets/images/icons/whatsapp.svg'
+import api from '../../services/api'
+import { errorAlert } from '../../utils/alerts'
 
 import './styles.css'
 
-const TeacherItem: React.FC = () => {
+export interface TeacherProps {
+  id: number
+  avatar: string
+  bio: string
+  cost: number
+  name: string
+  subject: string
+  whatsapp: string
+}
+
+const TeacherItem: React.FC<TeacherProps> = ({ id, avatar, bio, cost, name, subject, whatsapp }) => {
+  const whatsappLink = `https://wa.me/${whatsapp}`
+
+  const createNewConnection = async () => {
+    try {
+      await api.post('/connections', {
+        user_id: id
+      })
+    } catch {
+      errorAlert('Erro ao gerar nova conexão')
+    }
+  }
+
   return (
     <article className="teacher-item">
       <header>
-        <img src="https://pbs.twimg.com/profile_images/1120304320564559872/LLNWj7Vf_400x400.jpg" alt="Fausto Silva" />
+        <img src={avatar} alt={`foto de ${name}`} />
         <div>
-          <strong>Fausto Silva</strong>
-          <span>Química</span>
+          <strong>{name}</strong>
+          <span>{subject}</span>
         </div>
       </header>
 
-      <p>
-        Entusiasta das melhores tecnologias de química avançada.
-        <br />
-        <br />
-        Apaixonado por explodir churrasqueiras e por mudar a vida das pessoas através de pegadinhas. Mais de 20.000
-        pessoas já passaram por uma das minhas explosões.
-      </p>
+      <p>{bio}</p>
 
       <footer>
         <p>
-          Preço/hora <strong>R$ 80,00</strong>
+          Preço/hora <strong>{cost}</strong>
         </p>
-        <button type="button">
+        <a href={whatsappLink} target="_blank" rel="noopener noreferrer" onClick={createNewConnection}>
           <img src={whatsappIcon} alt="Logo do Whatsapp" />
           Entrar em contato
-        </button>
+        </a>
       </footer>
     </article>
   )
